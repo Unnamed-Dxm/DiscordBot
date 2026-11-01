@@ -12,17 +12,17 @@ GUILD_ID = os.getenv("GUILD_ID")
 client = discord.Client(intents=discord.Intents.default())
 tree = app_commands.CommandTree(client)
 
-@tree.command(name="mmm", description="Beste money making method voor jouw profiel")
-@app_commands.describe(naam="Je Minecraft-naam", gear="Je belangrijkste gear")
-async def mmm(interaction: discord.Interaction, naam: str, gear: str = ""):
+@tree.command(name="mmm", description="Best money making methods for your SkyBlock profile")
+@app_commands.describe(username="Your Minecraft username", gear="Optional extra info about your gear")
+async def mmm(interaction: discord.Interaction, username: str, gear: str = ""):
     await interaction.response.defer()
     try:
         async with aiohttp.ClientSession() as s:
-            async with s.get(N8N_URL, params={"name": naam, "gear": gear}, timeout=aiohttp.ClientTimeout(total=120)) as r:
+            async with s.get(N8N_URL, params={"name": username, "gear": gear}, timeout=aiohttp.ClientTimeout(total=120)) as r:
                 data = await r.json()
-        await interaction.followup.send(data.get("advies", "Geen advies ontvangen.")[:2000])
+        await interaction.followup.send(data.get("advies", "No advice received.")[:2000])
     except Exception as e:
-        await interaction.followup.send(f"Fout: {e}")
+        await interaction.followup.send(f"Error: {e}")
 
 @client.event
 async def on_ready():
@@ -32,7 +32,6 @@ async def on_ready():
         await tree.sync(guild=guild)
     else:
         await tree.sync()
-    print(f"Ingelogd als {client.user}")
+    print(f"Logged in as {client.user}")
 
-client.run(TOKEN)
 client.run(TOKEN)
